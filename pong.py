@@ -11,17 +11,23 @@ class Bar:
 		self.vel = 0
 
 	def move_up(self):
-		self.vel = self.speed
+		self.vel = -self.speed
 
 	def move_down(self):
-		self.vel = -self.speed
+		self.vel = self.speed
 
 	def stop(self):
 		self.vel = 0
 
 	def move(self):
 		self.rect.y += self.vel
-		pygame.draw.rect(self.surface, self.color, self.rect)
+		if (self.surface.get_rect().contains(self.rect)):
+			pygame.draw.rect(self.surface, self.color, self.rect)
+		else:
+			self.rect.y -= self.vel			
+			pygame.draw.rect(self.surface, self.color, self.rect)
+
+
 
 class Ball:
 	def __init__(self, surface, color, center, radius):
@@ -33,9 +39,16 @@ class Ball:
 
 		self.vel_x = 0
 		self.vel_y = 0
-		self.max_speed = 4
+		self.max_speed = 6
 
 	def move(self):
+		if self.vel_x > self.max_speed:
+			self.vel_x = self.max_speed
+		if self.vel_y > self.max_speed:
+			self.vel_y = self.max_speed
+
 		self.center_x += self.vel_x
 		self.center_y += self.vel_y
 		self.rect = pygame.draw.circle(self.surface, self.color, (self.center_x, self.center_y), self.radius)
+
+
