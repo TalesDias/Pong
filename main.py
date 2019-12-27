@@ -19,19 +19,23 @@ from pong import *
 #Working directory
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
-
 # quick function to load an image
 def load_image(name):
     path = os.path.join(main_dir, "images", name)
     return pygame.image.load(path).convert()
 
-def rand_vel_ball(ball):
-    rand = int(random.random()*100)
-    ball.vel_x = ball.max_speed/2 if rand%2 else -ball.max_speed/2    
-    ball.vel_y = rand%(ball.max_speed) - ball.max_speed/2
-
 # main thread
 def main():
+    paused = False
+    def pause():
+        nonlocal paused
+        paused = not paused
+
+    def rand_vel_ball(ball):
+        rand = int(random.random()*100)
+        ball.vel_x = int(ball.max_speed/2 if rand%2 else -ball.max_speed/2)
+        ball.vel_y = int(rand%(ball.max_speed) - ball.max_speed/2)
+
 
     #Should Always be the first to prevent bugs
     pygame.init()
@@ -73,11 +77,19 @@ def main():
     kb.while_key_pressed(pygame.K_DOWN, bar_r.move_down)
     kb.on_key_released(pygame.K_DOWN, bar_r.stop)
 
+    #key p pauses the game
+    kb.on_key_pressed(pygame.K_p, pause)
+
     #key k exits the game
     kb.on_key_pressed(pygame.K_k, pygame.quit)
 
-    #main loop
+    #main loop:
     while True:
+        #check if the game is paused
+        if paused:
+            time.sleep(0.01)
+            continue
+
         #clear screen
         screen.fill((0, 0, 0))
 
@@ -87,12 +99,22 @@ def main():
         
         #check if any of the sides lost a life
         if (ball.rect.left <= 0 or ball.rect.right >= width):
-            
             if(ball.rect.left <= 0):
                 lives_l -=1
+                if lives_l<=0:
+                    print("RIGTH PLAYER WINS")
+                    return 0
             else:
                 lives_r -=1
+                if lives_r<=0:                    
+                    print("LEFT PLAYER WINS")
+                    return 0
 
+            #reset bar position
+            bar_l.rect.y = height/2-75
+            bar_r.rect.y = height/2-75
+
+            #reset ball position
             ball.center_x,ball.center_y= screen.get_rect().center
             rand_vel_ball(ball)
 
@@ -103,7 +125,6 @@ def main():
         #bounce the ball on the bars
         #note that the far from the center off the ball 
         #the more the ball accelerates
-
         if(ball.rect.colliderect(bar_l.rect)):
             if ball.vel_x > 0:
                 ball.vel_x = -ball.max_speed
@@ -112,7 +133,7 @@ def main():
 
             delta = bar_l.rect.centery -  ball.center_y
             diff = delta//(bar_l.rect.height/8)
-            ball.vel_y -= diff    
+            ball.vel_y -= int(diff)
 
         if(ball.rect.colliderect(bar_r.rect)):
             if ball.vel_x > 0:
@@ -121,7 +142,7 @@ def main():
                 ball.vel_x = ball.max_speed
             delta = bar_r.rect.centery -  ball.center_y
             diff = delta//(bar_r.rect.height/8)
-            ball.vel_y -= diff
+            ball.vel_y -= int(diff)
 
 
         #register moves

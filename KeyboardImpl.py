@@ -1,4 +1,4 @@
-import thread, io, time, pygame
+import _thread, io, time, pygame
 
 
 class Keyboard:
@@ -7,7 +7,7 @@ class Keyboard:
 		self.on_key_pressed_events = []
 		self.on_key_released_events = []
 		self.event_stack = event_stack
-		thread.start_new_thread(self.handle_events,(event_stack,))
+		_thread.start_new_thread(self.handle_events,(event_stack,))
 
 	def handle_events(self, event_stack):
 		while 1:
