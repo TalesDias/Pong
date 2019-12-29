@@ -55,8 +55,8 @@ def game(mode):
     screen.fill((0, 0, 0))
 
     #game HUD
-    lives_l = 1
-    lives_r = 1  
+    lives_l = 10
+    lives_r = 10 
     font_score = pygame.font.SysFont(pygame.font.get_default_font(), 30, True,False)
 
     #creates the ball
