@@ -1,4 +1,12 @@
 import pygame
+import _thread, time
+from enum import Enum
+
+class game_mode(Enum):
+	VERSUS = 0
+	COMPUTER_EASY = 1
+	COMPUTER_MEDIUM = 2
+	COMPUTER_HARD = 3
 
 class Bar:
 	def __init__(self, surface, color, rect):
@@ -7,7 +15,7 @@ class Bar:
 		self.rect = rect
 		pygame.draw.rect(self.surface, self.color, rect)
 
-		self.speed = 5
+		self.speed = 4
 		self.vel = 0
 
 	def move_up(self):
@@ -52,3 +60,26 @@ class Ball:
 		self.rect = pygame.draw.circle(self.surface, self.color, (self.center_x, self.center_y), self.radius)
 
 
+
+class IA_easy:
+	def __init__(self, bar, ball):
+		self.bar = bar
+		self.ball = ball
+
+		_thread.start_new_thread(self.play,())
+
+	def play(self):
+		tollerance = 20
+		while True:
+			bar_pos = self.bar.rect.centery
+			ball_pos = self.ball.center_y
+
+			pos = bar_pos-ball_pos
+
+			if pos - tollerance < 0:
+				self.bar.move_down()
+			elif pos + tollerance > 0:
+				self.bar.move_up()
+			else:
+				self.bar.stop()
+			time.sleep(0.01)

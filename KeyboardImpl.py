@@ -6,11 +6,12 @@ class Keyboard:
 		self.while_key_pressed_events = []
 		self.on_key_pressed_events = []
 		self.on_key_released_events = []
+
 		self.event_stack = event_stack
 		_thread.start_new_thread(self.handle_events,(event_stack,))
 
 	def handle_events(self, event_stack):
-		while 1:
+		while True:
 			events = self.event_stack.get()
 			for keyboard_event in events:
 
